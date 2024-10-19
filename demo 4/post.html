@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <title>Create Post - HiddenGems</title>
+    <style>
+      /* Root colors for consistency */
+      :root {
+        --primary-color: #3fa9ef;
+        --secondary-color: #f4f7fb;
+        --accent-color: #ff6f61;
+        --text-color: #333;
+        --light-text-color: #555;
+        --light-border: #ddd;
+        --card-shadow: rgba(0, 0, 0, 0.1);
+      }
+
+      /* Basic styling for body and nav */
+      body {
+        font-family: "Roboto", sans-serif;
+        background-color: #ffffff;
+        margin: 0;
+        padding: 0;
+        color: var(--text-color);
+      }
+
+      nav {
+        display: flex;
+        padding: 15px;
+        background: var(--secondary-color);
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        justify-content: space-between;
+        align-items: center;
+        font-size: 16px;
+      }
+
+      nav a {
+        margin: 0 15px;
+        text-decoration: none;
+        color: var(--text-color);
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      nav a:hover {
+        color: var(--primary-color);
+      }
+
+      /* Modal Overlay */
+      #modalOverlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9;
+        display: none;
+      }
+
+      /* Pretty Responsive Modal */
+      #createPostModal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fff;
+        width: 90%;
+        max-width: 500px;
+        padding: 20px;
+        box-shadow: 0 8px 15px var(--card-shadow);
+        border-radius: 10px;
+        z-index: 10;
+        overflow-y: auto;
+        max-height: 80%;
+      }
+
+      #createPostModal h2 {
+        font-size: 24px;
+        margin-bottom: 15px;
+        color: var(--primary-color);
+        border-bottom: 2px solid var(--primary-color);
+        padding-bottom: 10px;
+      }
+
+      #createPostModal input[type="text"],
+      #createPostModal textarea {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        border: 1px solid var(--light-border);
+        border-radius: 8px;
+        font-family: "Roboto", sans-serif;
+        box-shadow: inset 0 1px 3px var(--card-shadow);
+        transition: border 0.3s ease;
+      }
+
+      #createPostModal input[type="text"]:focus,
+      #createPostModal textarea:focus {
+        border: 1px solid var(--primary-color);
+        outline: none;
+      }
+
+      #dropZone {
+        border: 2px dashed var(--light-border);
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        background-color: var(--secondary-color);
+        color: var(--light-text-color);
+        transition: border 0.3s ease;
+      }
+
+      #dropZone.dragging {
+        border-color: var(--primary-color);
+      }
+
+      #preview {
+        width: 100%;
+        height: auto;
+        margin-top: 15px;
+        border-radius: 8px;
+      }
+
+      #createPostModal button {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: "Roboto", sans-serif;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        display: block;
+        width: 100%;
+        font-weight: 700;
+      }
+
+      #createPostModal button:hover {
+        background-color: var(--accent-color);
+      }
+
+      #createPostModal button:active {
+        transform: scale(0.98);
+      }
+
+      /* Post cards */
+      .post-card {
+        border: 1px solid var(--light-border);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px var(--card-shadow);
+        background-color: white;
+        transition: box-shadow 0.3s ease;
+      }
+
+      .post-card:hover {
+        box-shadow: 0 6px 12px var(--card-shadow);
+      }
+
+      .post-card img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+      }
+
+      .post-card h3 {
+        margin-top: 15px;
+        font-size: 20px;
+        color: var(--primary-color);
+      }
+
+      .post-card p {
+        color: var(--light-text-color);
+        font-size: 16px;
+        line-height: 1.5;
+      }
+
+      /* Responsive Posts Grid */
+      #posts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        grid-gap: 20px;
+        padding: 80px 20px 20px; /* Padding to avoid overlapping with nav */
+        background-color: var(--secondary-color);
+      }
+
+      /* Media Queries */
+      @media (max-width: 768px) {
+        nav {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        #createPostModal {
+          width: 95%;
+          max-width: none;
+        }
+
+        #posts-grid {
+          padding: 90px 10px 20px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        nav {
+          font-size: 14px;
+        }
+
+        #createPostModal {
+          padding: 15px;
+        }
+
+        #posts-grid {
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav>
+      <a class="logo" href="#">HiddenGems</a>
+      <a href="#">Home</a>
+      <a href="#" id="createPostBtn">Create</a>
+    </nav>
+
+    <!-- Modal Overlay -->
+    <div id="modalOverlay"></div>
+
+    <!-- Create Post Modal -->
+    <div id="createPostModal">
+      <h2>Create a Post</h2>
+      <div id="dropZone">Drag and drop an image or click to upload</div>
+      <img id="preview" src="" alt="Image Preview" style="display: none" />
+      <input type="text" id="title" placeholder="Enter title" />
+      <textarea id="description" placeholder="Enter description"></textarea>
+      <button id="postButton">Post</button>
+    </div>
+
+    <!-- Post Grid Section -->
+    <section class="profile-posts">
+      <h2
+        style="text-align: center; padding: 20px; color: var(--primary-color)"
+      >
+        Posts
+      </h2>
+      <div id="posts-grid"></div>
+    </section>
+
+    <script>
+      // Variables
+      const createPostBtn = document.getElementById("createPostBtn");
+      const modalOverlay = document.getElementById("modalOverlay");
+      const createPostModal = document.getElementById("createPostModal");
+      const dropZone = document.getElementById("dropZone");
+      const preview = document.getElementById("preview");
+      const postButton = document.getElementById("postButton");
+      const postsGrid = document.getElementById("posts-grid");
+      let imageFile = null;
+
+      // Open Modal
+      createPostBtn.addEventListener("click", () => {
+        createPostModal.style.display = "block";
+        modalOverlay.style.display = "block";
+      });
+
+      // Close modal when clicking outside
+      modalOverlay.addEventListener("click", () => {
+        createPostModal.style.display = "none";
+        modalOverlay.style.display = "none";
+      });
+
+      // Handle drag and drop upload
+      dropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropZone.classList.add("dragging");
+      });
+
+      dropZone.addEventListener("dragleave", () => {
+        dropZone.classList.remove("dragging");
+      });
+
+      dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("dragging");
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith("image/")) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            preview.src = reader.result;
+            preview.style.display = "block";
+          };
+          reader.readAsDataURL(file);
+          imageFile = file;
+        }
+      });
+
+      dropZone.addEventListener("click", () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+        input.onchange = (e) => {
+          const file = e.target.files[0];
+          if (file && file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onload = () => {
+              preview.src = reader.result;
+              preview.style.display = "block";
+            };
+            reader.readAsDataURL(file);
+            imageFile = file;
+          }
+        };
+        input.click();
+      });
+
+      // Post button logic
+      postButton.addEventListener("click", () => {
+        const title = document.getElementById("title").value.trim();
+        const description = document.getElementById("description").value.trim();
+
+        if (title && description && imageFile) {
+          const postCard = document.createElement("div");
+          postCard.classList.add("post-card");
+
+          const img = document.createElement("img");
+          img.src = preview.src;
+          postCard.appendChild(img);
+
+          const postTitle = document.createElement("h3");
+          postTitle.textContent = title;
+          postCard.appendChild(postTitle);
+
+          const postDesc = document.createElement("p");
+          postDesc.textContent = description;
+          postCard.appendChild(postDesc);
+
+          // Add the post card to the grid
+          postsGrid.appendChild(postCard);
+
+          // Reset modal fields and close modal
+          preview.src = "";
+          preview.style.display = "none";
+          document.getElementById("title").value = "";
+          document.getElementById("description").value = "";
+          imageFile = null;
+
+          createPostModal.style.display = "none";
+          modalOverlay.style.display = "none";
+        } else {
+          alert("Please provide an image, title, and description.");
+        }
+      });
+    </script>
+  </body>
+</html>
