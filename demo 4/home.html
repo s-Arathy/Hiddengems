@@ -40,14 +40,14 @@
 
     nav a {
       text-decoration: none;
-      color: #000;
+      color: #003049;
       font-weight: 600;
       padding: 10px 15px;
       border-radius: 20px;
     }
 
     nav a.active {
-      background: #d62828;
+      background: #f77f00;
       color: #ffffff;
     }
 
@@ -80,7 +80,7 @@
     }
 
     a.icon:hover {
-      background: #eae2b7;
+      background: #f77f00;
     }
 
     #container {
@@ -112,7 +112,7 @@
 
     #loader {
       border: 4px solid #f3f3f3;
-      border-top: 4px solid #3fa9ef;
+      border-top: 4px solid #fcbf49;
       border-radius: 50%;
       width: 30px;
       height: 30px;
@@ -150,7 +150,7 @@
     }
 
     .dropdown-content a {
-      color: black; /* Text color */
+      color: #003049; /* Text color */
       padding: 12px 16px; /* Padding around each item */
       text-decoration: none; /* No underline */
       display: block; /* Display as block to take full width */
@@ -242,20 +242,33 @@
           console.error("Error initial fetch:", error);
         });
 
-      const createCard = (image, col) => {
+      const createCard = (image, col, artworkId) => {
         const card = document.createElement("div");
         card.classList.add("card");
+
+        // Create the anchor element and set the href attribute
+        const link = document.createElement("a");
+        link.href = `description.html?id=${artworkId}`; // Pass the artworkId in the URL
+
+        // Create the image element
         const img = document.createElement("img");
         img.src = image;
-        img.alt = "image";
+        img.alt = "Artwork image";
         img.style.width = "100%";
         img.onerror = function () {
-          this.parentElement.style.display = "none";
+          this.parentElement.style.display = "none"; // Hide the card if image fails to load
         };
         img.onload = function () {
-          document.getElementById("loader").style.display = "none";
+          document.getElementById("loader").style.display = "none"; // Hide the loader when the image is loaded
         };
-        card.appendChild(img);
+
+        // Append the image to the anchor element
+        link.appendChild(img);
+
+        // Append the anchor to the card element
+        card.appendChild(link);
+
+        // Append the card to the column
         col.appendChild(card);
       };
 

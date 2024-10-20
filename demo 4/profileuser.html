@@ -206,7 +206,7 @@
         grid-template-columns: repeat(3, 1fr); /* 3 columns */
         grid-gap: 10px; /* Gap between images */
       }
-      #postswr {
+      #savewr {
         padding-left: 10px;
       }
 
@@ -215,97 +215,6 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-      }
-
-      /* Existing modal styling (keep this) */
-      #modalOverlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        display: none;
-        z-index: 9;
-      }
-
-      #createPostModal {
-        display: none;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: white;
-        width: 90%;
-        max-width: 500px;
-        padding: 20px;
-        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-        border-radius: 10px;
-        z-index: 10;
-        max-height: 80vh; /* Limit the height of the modal */
-        overflow-y: auto; /* Allow scrolling if content exceeds modal height */
-      }
-
-      /* Make modal responsive for smaller devices */
-      @media (max-width: 768px) {
-        #createPostModal {
-          width: 95%;
-          max-width: none; /* Remove max-width constraint on small screens */
-          top: 10%; /* Adjust positioning for better look */
-          transform: translate(
-            -50%,
-            0
-          ); /* Remove vertical centering for small screens */
-          max-height: 90vh; /* Ensure more height for mobile devices */
-        }
-      }
-
-      /* Style individual fields */
-      #dropZone,
-      input,
-      textarea {
-        font-family: "Roboto", sans-serif;
-        padding-top: 10px;
-        width: 100%;
-        margin-bottom: 10px;
-        margin-top: 20px;
-      }
-
-      #dropZone {
-        border: 2px #003049;
-        border-style: groove;
-        padding: 20px;
-        text-align: center;
-        cursor: pointer;
-        border-radius: 8px;
-      }
-
-      #title,
-      textarea {
-        padding: 10px;
-        border-radius: 8px;
-        border: 1px solid #eae2b7;
-        background-color: #f7f5f0e7;
-      }
-
-      textarea {
-        height: 100px;
-        resize: vertical; /* Allow resizing vertically */
-      }
-
-      #postButton {
-        width: 100%;
-        padding: 10px;
-        background-color: #fcbf49;
-        color: #003049;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 16px;
-      }
-
-      #postButton:hover {
-        background-color: #f77f00;
       }
     </style>
   </head>
@@ -331,32 +240,19 @@
     </nav>-->
     <nav>
       <a class="logo" href="#"><img src="logo.png" alt="" /></a>
-      <a href="home.html">Home</a>
+      <a href="homeuser.html">Home</a>
 
-      <a href="#" id="createPostBtn">Create</a>
       <input type="text" class="search" placeholder="Search" />
       <a href="#" class="icon"><i class="fas fa-bell"></i></a>
       <a href="#" class="icon"><i class="fas fa-heart"></i></a>
-      <a href="#" id="profile-link"><img src="profile.jpg" alt="" /></a>
+      <a href="#" id="profile-link"><img src="profileuser.jpeg" alt="" /></a>
     </nav>
-
-    <!-- This is the modal overlay -->
-    <div id="modalOverlay" style="display: none"></div>
-
-    <div id="createPostModal">
-      <h2>Create a Post</h2>
-      <div id="dropZone">Drag and drop an image or click to upload</div>
-      <img id="preview" src="" alt="Image Preview" style="display: none" />
-      <input type="text" id="title" placeholder="Enter title" />
-      <textarea id="description" placeholder="Enter description"></textarea>
-      <button id="postButton">Post</button>
-    </div>
 
     <!-- Profile Header Section -->
     <section class="profile-header" id="container">
       <!-- Profile Picture -->
       <div class="profile-picture">
-        <img src="profile.jpg" alt="Profile Picture" />
+        <img src="profileuser.jpeg" alt="Profile Picture" />
       </div>
 
       <!-- Profile Info -->
@@ -366,7 +262,7 @@
         <div class="profile-stats">
           <div class="stat-item">
             <span id="post-count">0</span>
-            <p>Posts</p>
+            <p>Saved</p>
           </div>
           <div class="stat-item">
             <span>1.2k</span>
@@ -383,7 +279,7 @@
     <!-- Posts Grid Section -->
     <section class="profile-posts">
       <!-- Title for the posts section -->
-      <h2 id="postswr">Posts</h2>
+      <h2 id="savewr">Saved</h2>
 
       <!-- Grid layout for posts (images) -->
       <div id="posts-grid">
@@ -464,117 +360,6 @@
         card.appendChild(img);
         col.appendChild(card);
       };
-
-      // Add this modal overlay to your HTML for background dimming
-      const modalOverlay = document.createElement("div");
-      modalOverlay.id = "modalOverlay";
-      document.body.appendChild(modalOverlay);
-
-      // Variables for modal and posting functionality
-      const createPostBtn = document.getElementById("createPostBtn");
-      const createPostModal = document.getElementById("createPostModal");
-      const dropZone = document.getElementById("dropZone");
-      const preview = document.getElementById("preview");
-      const postButton = document.getElementById("postButton");
-      const postsGrid = document.getElementById("posts-grid");
-      const postCount = document.getElementById("post-count"); // Correct ID
-      let imageFile = null;
-      //let count = 0;
-
-      // Open Modal
-      createPostBtn.addEventListener("click", () => {
-        createPostModal.style.display = "block";
-        modalOverlay.style.display = "block";
-      });
-
-      // Close modal when clicking outside the modal
-      modalOverlay.addEventListener("click", () => {
-        createPostModal.style.display = "none";
-        modalOverlay.style.display = "none";
-      });
-
-      // Handle drag and drop upload
-      dropZone.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        dropZone.classList.add("dragging");
-      });
-
-      dropZone.addEventListener("dragleave", () => {
-        dropZone.classList.remove("dragging");
-      });
-
-      dropZone.addEventListener("drop", (e) => {
-        e.preventDefault();
-        dropZone.classList.remove("dragging");
-        const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith("image/")) {
-          const reader = new FileReader();
-          reader.onload = () => {
-            preview.src = reader.result;
-            preview.style.display = "block";
-          };
-          reader.readAsDataURL(file);
-          imageFile = file;
-        }
-      });
-
-      // Handle click to upload image
-      dropZone.addEventListener("click", () => {
-        const input = document.createElement("input");
-        input.type = "file";
-        input.accept = "image/*";
-        input.onchange = (e) => {
-          const file = e.target.files[0];
-          if (file && file.type.startsWith("image/")) {
-            const reader = new FileReader();
-            reader.onload = () => {
-              preview.src = reader.result;
-              preview.style.display = "block";
-            };
-            reader.readAsDataURL(file);
-            imageFile = file;
-          }
-        };
-        input.click();
-      });
-
-      // Post button logic: Adding the image and incrementing the post count
-      postButton.addEventListener("click", () => {
-        const title = document.getElementById("title").value.trim();
-        const description = document.getElementById("description").value.trim();
-
-        if (imageFile) {
-          // Create a new post (card format) with an image
-          const newImage = preview.src;
-
-          // Create a card for the new image using the same format as fetched images
-          createCard(
-            newImage,
-            cols[
-              Array.from(document.querySelectorAll(".card")).length %
-                cols.length
-            ]
-          );
-
-          // Increment post count and update the display
-          let count = parseInt(postCount.textContent); // Convert to integer
-          count += 1;
-          postCount.textContent = `${count} posts`; // Update the post count display
-
-          // Reset modal fields and close the modal
-          preview.src = "";
-          preview.style.display = "none";
-          document.getElementById("title").value = "";
-          document.getElementById("description").value = "";
-          imageFile = null;
-
-          // Hide the modal
-          createPostModal.style.display = "none";
-          modalOverlay.style.display = "none";
-        } else {
-          alert("Please upload an image.");
-        }
-      });
     </script>
   </body>
 </html>
